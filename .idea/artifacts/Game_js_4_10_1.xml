@@ -1,0 +1,6 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="Game-js-4.10.1">
+    <output-path>$PROJECT_DIR$/Game/build/libs</output-path>
+    <root id="archive" name="Game-js-4.10.1.jar" />
+  </artifact>
+</component>

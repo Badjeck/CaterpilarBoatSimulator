@@ -7,8 +7,12 @@ import com.soywiz.korim.format.*
 import com.soywiz.korio.file.std.*
 import com.soywiz.korma.geom.degrees
 import com.soywiz.korma.interpolation.Easing
+import com.example.example.Class.Map
 
 suspend fun main() = Korge(width = 512, height = 512, bgcolor = Colors["#2b2b2b"]) {
+
+	Map map = new Map(1)
+
 	val minDegrees = (-16).degrees
 	val maxDegrees = (+16).degrees
 
@@ -23,4 +27,6 @@ suspend fun main() = Korge(width = 512, height = 512, bgcolor = Colors["#2b2b2b"
 		image.tween(image::rotation[minDegrees], time = 1.seconds, easing = Easing.EASE_IN_OUT)
 		image.tween(image::rotation[maxDegrees], time = 1.seconds, easing = Easing.EASE_IN_OUT)
 	}
+
+
 }
