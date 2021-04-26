@@ -96,7 +96,7 @@ class ThreadClient(threading.Thread):
             account = self.checkAccount(data['username'])
             self.player = Player(account['id'], account['username'], [account['posX'], account['posY']])
             allPlayers[account['id']] = {'pos': self.player.pos}
-            self.addPostion()
+            self.addPosition()
             while True:
                 # Message envoyé au clien
                 message = {
@@ -108,22 +108,13 @@ class ThreadClient(threading.Thread):
                 # Reçois les données du joueur
                 data = self.recv(200)
                 self.player.pos = data['pos']
-                self.addPostion()
+                self.addPosition()
                 # Actualise les données du joueur avec celles du serveur
                 allPlayers[account['id']] = data
 
                 print(self.player.id, '=', self.getPosition())
                 time.sleep(2)
-            # #allPlayers[self.addr[1]] = Player(self.addr[1], data['username'])
-            # while True:
-            #     message = {'dataPlayer': allPlayers[self.addr[1]], 'allPlayers': allPlayers, 'needAction': self.needAction, 'actualPlayers': len(allPlayers)}
-            #     self.send(message)
-            #     if self.needAction:
-            #         print(pickle.loads(self.recv()))
-            #         self.needAction = False
-            #     print('========', self.addr[1], len(allPlayers[self.addr[1]].hand.cards))
-            #     time.sleep(3)
-
+                
         except Exception as e:
             print(self.addr[1],"se deconnecte")
             del allPlayers[account['id']]
@@ -139,7 +130,7 @@ class ThreadClient(threading.Thread):
             req = apiManager.addUser(username,random.randint(1, 501), random.randint(1, 501))
             return req['data']
 
-    def addPostion(self):
+    def addPosition(self):
         redisManager.send(self.player.id, f'{self.player.pos[0]}x{self.player.pos[1]}')
     
     def getPosition(self):
@@ -195,5 +186,5 @@ class Server():
             allThreads[addr[1]][1].start()
 
 if __name__ == '__main__':
-    monServeur = Server('88.137.179.12', 5555)
+    monServeur = Server('localhost', 5555)
     monServeur.run_server()
