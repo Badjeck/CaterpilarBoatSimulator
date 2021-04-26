@@ -9,29 +9,38 @@ db = SQLAlchemy(app)
 @app.route('/user/<username>', methods=['GET'])
 def getUser(username):
     user = Users.query.filter_by(username=username).first()
-    print("===",user)
     response = {
             "id": user.id,
-            "username": user.username
+            "username": user.username,
+            "posX": user.posx,
+            "posY": user.posy
         }
+    # data = request.get_json()
+    # res = Users.query.filter_by(username=username, email=email)
     return {"message": "success", "data": response}
 
 # Récupération de tous les comptes
 @app.route('/users', methods=['GET'])
 def getUsers():
-    res = [{"id": i.id, "username": i.username} for i in Users.query.all()]
+    res = [{"id": i.id, "username": i.username, "posX": i.posx, "posY": i.posy} for i in Users.query.all()]
     return {"message": 'success', "data": res}
 
 # Création de compte
 @app.route('/user', methods=['POST'])
 def postUser():
     try:
-
-        db.session.add(Users(request.form['username']))
+        db.session.add(Users(request.form['username'], request.form['posx'], request.form['posy']))
         db.session.commit()
-        return {"message": 'success', "data": f"L'utilisateur {request.form['username']} a été ajouté"}
+        user = Users.query.filter_by(username=request.form['username']).first()
+        response = {
+                "id": user.id,
+                "username": user.username,
+                "posX": user.posx,
+                "posY": user.posy
+            }
+        return {"message": 'success', "data": response}
     except Exception as e:
-        if : "<class 'sqlalchemy.exc.IntegrityError'>" == str(type(e)):
+        if "<class 'sqlalchemy.exc.IntegrityError'>" == str(type(e)):
             return {"message": 'error', 'data': "Le pseudo existe deja"}
     
 # Modification de compte par id
@@ -39,16 +48,30 @@ def postUser():
 def putUser(username):
     user = Users.query.filter_by(username=username).first()
     user.username = request.form['username']
+    user.posx = int(request.form['posx'])
+    user.posy = int(request.form['posy'])
     db.session.commit()
-    return {"message": 'success', "data": f"L'utilisateur {request.form['username']} a été modifié"}
+
+    user = Users.query.filter_by(username=username).first()
+    response = {
+        "id": user.id,
+        "username": user.username,
+        "pos": user.posx,
+        "posY": user.posy
+    }
+    return {"message": 'success', "data": response}
 
 
 class Users(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True)
+    posx = db.Column(db.Integer(), unique=True)
+    posy = db.Column(db.Integer(), unique=True)
 
-    def __init__(self, username):
+    def __init__(self, username, posx, posy):
         self.username = username
+        self.posx = posx
+        self.posy = posy
     
     def __repr__(self):
         return f'{self.username}'
