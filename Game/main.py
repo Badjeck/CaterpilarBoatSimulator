@@ -14,9 +14,9 @@ class Thread(threading.Thread):
         threading.Thread.__init__(self)
         self.player = p
         # Connection au serveur
-        self.network = Network('192.168.1.63', 5555)
+        self.network = Network('localhost', 5555)
         self.network.connect()
-        self.message = {'username': 'lemecdudevant', 'nb_player': 3}
+        self.message = {'username': 'testguy', 'nb_player': 3}
         self.network.send(self.message)
         # Reception des premieres données
         self.data = self.network.recv(1024)
