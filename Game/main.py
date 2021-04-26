@@ -5,18 +5,18 @@ import threading
 import sys
 from Network import *
 import os
-os.environ["SDL_VIDEODRIVER"] = "dummy"
+# os.environ["SDL_VIDEODRIVER"] = "dummy"
 
-allPlayers = {}
+allPlayers = []
 
 class Thread(threading.Thread):
-    def __init__(self, p):
+    def __init__(self, p, g):
         threading.Thread.__init__(self)
         self.player = p
         # Connection au serveur
-        self.network = Network('localhost', 5555)
+        self.network = Network('192.168.1.63', 5555)
         self.network.connect()
-        self.message = {'username': 'ujjjjj', 'nb_player': 3}
+        self.message = {'username': 'lemecdudevant', 'nb_player': 3}
         self.network.send(self.message)
         # Reception des premieres données
         self.data = self.network.recv(1024)
@@ -27,6 +27,7 @@ class Thread(threading.Thread):
         self.network.send(self.data)
 
     def run(self):
+        new_friend = True
         while g.running:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -38,12 +39,22 @@ class Thread(threading.Thread):
                 
                 for k, v in self.data['allPlayers'].items():
                     print(self.player)
+                    # k = id user
+                    # v = position user
                     v = [int(v[0]), int(v[1])]
-                    if k not in allPlayers.keys():
-                        allPlayers[k] = Friends(g, v[0], v[1])
-                    elif allPlayers[k] != v:
-                        allPlayers[k].pos = v
-                    
+                    friend = [k,v]
+                    for el in allPlayers:
+                        if k == el[0]:
+                            new_friend = False
+                            pass
+                        else:
+                            new_friend = True
+
+                    if new_friend:
+                        allPlayers.append(friend)
+                        g.newFriend(v[0],v[1])
+                        new_friend = False
+                     
                     
                 self.data['pos'] = self.player.pos
                 self.network.send(self.data)
@@ -125,7 +136,9 @@ class Game:
             i = random.randint(0, len(forest))
             Forest(self, forest[i][0] , forest[i][1])
 
-
+    def newFriend(self,x,y):
+        Friends(self,int(x),int(y))
+    
     def new(self):
         #new game start
         self.playing = True
@@ -158,7 +171,7 @@ class Game:
 
     def intro_screen(self):
         pass
-
+ 
     def main(self):
         #game loop
 
@@ -173,7 +186,7 @@ class Game:
 g = Game()
 g.new()
 while g.running:
-    Thread(g.Player).start()
+    Thread(g.Player, g).start()
     g.main()
     g.game_over()
 

@@ -138,33 +138,31 @@ class EnemyCamp(pygame.sprite.Sprite):
             self.rect.y = self.y
             
 class Friends(pygame.sprite.Sprite):
-    def __init__(self, game, x, y):
+    def __init__(self,game,x,y):
         self.game = game
+        self._layer = PLAYER_LAYER
         self.groups = self.game.all_sprites
         pygame.sprite.Sprite.__init__(self,self.groups)
 
         #define size
-        self.x = x * TILESIZE
-        self.y = y * TILESIZE
+        self.x = x
+        self.y = y
         self.width = TILESIZE
         self.height = TILESIZE
 
         self.x_change = 0
-        self.y_change = 0
-
-        self.facing = "down"    
+        self.y_change = 0   
 
         #define visual
+        image_to_load = pygame.image.load('img/Boat.png')
+        image_to_load = pygame.transform.scale(image_to_load,(32,32))
         self.image = pygame.Surface([self.width,self.height])
-        self.image.fill(RED)
-
-        #define hitbox
+        self.image.set_colorkey(BLACK)
+        self.image.blit(image_to_load,(0,0))
         self.rect = self.image.get_rect()
         self.rect.x = self.x
         self.rect.y = self.y
-        
-        self.pos = [self.rect.x, self.rect.y]
 
     def update(self):
-        self.rect.x = self.pos[0]
-        self.rect.y = self.pos[1]
+        self.rect.x += self.x_change
+        self.rect.y += self.y_change
