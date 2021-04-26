@@ -14,8 +14,6 @@ def getUser(username):
             "id": user.id,
             "username": user.username
         }
-    # data = request.get_json()
-    # res = Users.query.filter_by(username=username, email=email)
     return {"message": "success", "data": response}
 
 # Récupération de tous les comptes
